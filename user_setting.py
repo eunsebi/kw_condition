@@ -18,7 +18,7 @@ CONDITION_INFO = {
     }
 }
 
-MAESU_UNIT = 5000000 # 매수 기본 단위 
+MAESU_UNIT = 100 # 매수 기본 단위 
 
 BUNHAL_MAESU_LIMIT = 3 # 분할 매수 횟수 제한 
 
