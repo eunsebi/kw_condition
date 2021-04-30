@@ -106,7 +106,7 @@ class KiwoomConditon(QObject):
         self.createState()
         self.createConnection()
         self.currentTime = datetime.datetime.now()
-        self.current_condition_name = ''
+        self.current_condition_name = '전일음봉'
 
         self.kospi_updown = 0 
         self.kosdaq_updown = 0 
@@ -222,6 +222,7 @@ class KiwoomConditon(QObject):
         pass
 
     def initQmlEngine(self):
+        print("33333")
         self.qmlEngine.load(QUrl('qrc:///qml/main.qml'))        
         self.rootObject = self.qmlEngine.rootObjects()[0]
         self.rootObject.startClicked.connect(self.onStartClicked)
@@ -235,6 +236,7 @@ class KiwoomConditon(QObject):
         pass
     @pyqtSlot()
     def onBtnMakeExcelClicked(self):
+        print("4444")
         print(util.whoami())
         self.make_excel(CHEGYEOL_INFO_EXCEL_FILE_PATH, self.chegyeolInfo)
         pass
@@ -269,6 +271,7 @@ class KiwoomConditon(QObject):
 
     @pyqtSlot()
     def onBtnConditionClicked(self):
+        print("555555")
         items = self.getCodeListConditionOccurList()
         buffer = [] 
 
@@ -302,7 +305,9 @@ class KiwoomConditon(QObject):
 
 
     @pyqtSlot(str, str, list)
+    # 6
     def onRealInfoArrived(self, jongmok_code, real_data_type, result_list ):
+        print("666666")
         # print("{} {} {}".format(self.getMasterCodeName(jongmok_code),  real_data_type, result_list))
 
         #잔고 실시간 정보 upate
@@ -367,7 +372,9 @@ class KiwoomConditon(QObject):
 
         self.sigRemoveJongmokInfo.connect(self.onRemoveJongmokInfo)
   
+    # 7
     def isTradeAvailable(self):
+        print("77777")
         # 매수 가능 시간 체크 
         # 기본 정보를 얻기 위해서는 장 시작전 미리 동작을 시켜야 하고 매수를 위한 시간은 정확히 9시를 맞춤 (동시호가 시간의 매도 호가로 인해 매수 됨을 막기 위함)
         ret_vals= []
@@ -419,7 +426,9 @@ class KiwoomConditon(QObject):
             self.sigConnected.emit()
             
     @pyqtSlot()
+    #계좌 정보
     def connectedStateEntered(self):
+        print("계좌 정보")
         # get 계좌 정보
 
         account_cnt = self.getLoginInfo("ACCOUNT_CNT")
@@ -449,7 +458,11 @@ class KiwoomConditon(QObject):
         pass
 
     @pyqtSlot()
+    #체결정보 로드
+    # ------------
     def initSystemStateEntered(self):
+        print("체결정보 로드")
+        print("---------------------")
         # 체결정보 로드 
         if( os.path.isfile(CHEGYEOL_INFO_FILE_PATH) == True ):
             with open(CHEGYEOL_INFO_FILE_PATH, 'r', encoding='utf8') as f:
@@ -482,7 +495,9 @@ class KiwoomConditon(QObject):
         pass 
 
     @pyqtSlot()
+    # 8888
     def waitingTradeSystemStateEntered(self):
+        print("88888888")
         # 장시작 전에 조건이 시작하도록 함 
         self.sigSelectCondition.emit()       
 
@@ -495,7 +510,6 @@ class KiwoomConditon(QObject):
         
         tempDict = dict(findList)
         print(tempDict)
-        
 
         condition_name_screenNo_dict = {}
         for number, condition in tempDict.items():
@@ -507,8 +521,14 @@ class KiwoomConditon(QObject):
 
         # 모든 리스트 종료 후 start 하도록 함
         for name, info in condition_name_screenNo_dict.items():
+            print("8---------------2")
+            print("condition_name_screenNo_dict : ", condition_name_screenNo_dict)
+            print("name : " , name)
+            print("current_condition_name : ", self.current_condition_name)
+
 
             if (name == self.current_condition_name ):
+                print("current_condition_name : ",self.current_condition_name)
                 start_info_list.append(info)
                 start_name_list.append(name)
             else: 
@@ -516,12 +536,15 @@ class KiwoomConditon(QObject):
                     start_info_list.append(info)
                     start_name_list.append(name)
                 else:
+                    print("8---------------3")
                     print("stop condition " + name + ", screen_no: " + info[0] + ", nIndex " + '{}'.format(int(info[1]) ) )
                     self.sendConditionStop( info[0], name, int(info[1]) )
                     self.disconnectRealData(info[0])
                     pass
 
         self.conditionOccurList.clear()
+
+        print("8---------4")
 
         for count in range(len(start_info_list)):
             print("start condition " + start_name_list[count] + ", screen_no: " + start_info_list[count][0] + ", nIndex " + '{}'.format(int(start_info_list[count][1])) )
@@ -540,7 +563,10 @@ class KiwoomConditon(QObject):
         pass
 
     @pyqtSlot()
+    # 실시간검색 시작
+    #999
     def beforeProcessStoplessStateEntered(self):
+        print("99999")
         print(util.whoami() )
         # 실시간검색시작
         self.refreshRealRequest()
@@ -640,7 +666,10 @@ class KiwoomConditon(QObject):
         pass
 
     @pyqtSlot()
+    # 조건 검색
+    # 10
     def determineBuyProcessBuyStateEntered(self):
+        print("101010101010")
         jongmok_info_dict = self.getConditionOccurList()
 
         # 조건 검색에 걸린 종목도 같이 리스트업 됨
@@ -812,7 +841,7 @@ class KiwoomConditon(QObject):
         # 증거금 조건 적용
         margin_percent = int(jongmok_info_dict['증거금률'])
         margin_key_name = '{}주문가능금액'
-        ##########################################################################################################
+        ###############################################ㄹ###########################################################
         # 첫 매수시만 적용되는 조건 
         if( jongmok_code not in self.jangoInfo ):
             # 시간제약
@@ -1130,8 +1159,10 @@ class KiwoomConditon(QObject):
         return True 
 
     # 주식 1일봉 요청 
+    # 11
     @pyqtSlot(str, result = bool )
     def requestOpt10081(self, jongmok_code):
+        print("111111111111111")
         # print(util.cur_time_msec() )
         datetime_str = datetime.datetime.now().strftime('%Y%m%d')
         self.setInputValue("종목코드", jongmok_code)
@@ -1147,7 +1178,9 @@ class KiwoomConditon(QObject):
         return True
         
     # 주식 일봉 데이터 생성  
+    # 12
     def makeOpt10081Info(self, rQName):
+        print("12121212")
         # 조건 발생한 종목 상위 리스트의 정보를 얻기 위함 
         jongmok_info_dict = self.getConditionOccurList()
         if( jongmok_info_dict == None ):
@@ -1181,8 +1214,10 @@ class KiwoomConditon(QObject):
         return True
 
     # 주식 분봉 tr 요청 
+    # 13
     @pyqtSlot(str, result = bool)
     def requestOpt10080(self, jongmok_code):
+        print("1313131313")
      # 분봉 tr 요청의 경우 너무 많은 데이터를 요청하므로 한개씩 수행 
         candle_type_str = "{}:{}분".format( user_setting.REQUEST_MINUTE_CANDLE_TYPE )
 
@@ -1201,7 +1236,9 @@ class KiwoomConditon(QObject):
         return True
 
     # 분봉 데이터 생성 
+    # 14
     def makeOpt10080Info(self, rQName):
+        print("1414141414")
         jongmok_code = rQName
         jongmok_info_dict = self.getConditionOccurList()
         if( jongmok_info_dict == None ):
@@ -1313,6 +1350,7 @@ class KiwoomConditon(QObject):
 
     @pyqtSlot()
     def onTimerSystemTimeout(self):
+        print("3333333333333333333---------")
 
         self.currentTime = datetime.datetime.now()
         current_time = self.currentTime.time()
@@ -1453,7 +1491,9 @@ class KiwoomConditon(QObject):
             pass
 
     # 실시간 시세 이벤트
+    # 15
     def _OnReceiveRealData(self, jongmok_code, realType, realData):
+        print("15151515")
 
         if( self.realInfoEnabled == True):
             print(util.whoami() + 'jongmok_code: {}, {}, realType: {}'
@@ -1577,11 +1617,14 @@ class KiwoomConditon(QObject):
             return False
 
 
+    # 16
     def processStopLoss(self, jongmok_code):
+        print("16161616")
         jongmok_name = self.getMasterCodeName(jongmok_code)
-        if( self.isTradeAvailable() == False ):
-            print('-1', end = '')
-            return
+        print("종목 이름 : " , jongmok_name)
+        #if( self.isTradeAvailable() == False ):
+        #    print('장 종료', end = '')
+        #    return
         
         # 예외 처리 리스트이면 종료 
         if( jongmok_code in user_setting.EXCEPTION_LIST ):
@@ -1773,7 +1816,9 @@ class KiwoomConditon(QObject):
     '매입단가': '809', '신용구분': '00', '매도/매수구분': '2', '(최우선)매도호가': '+806', '신용이자': '0'}
     ''' 
     # receiveChejanData 에서 말씀하신 951번 예수금데이터는 제공되지 않습니다. from 운영자
+    # 17
     def _OnReceiveChejanData(self, gubun, itemCnt, fidList):
+        print("17171717171717")
         # print(util.whoami() + 'gubun: {}, itemCnt: {}, fidList: {}'
         #         .format(gubun, itemCnt, fidList))
         if( gubun == "1"): # 잔고 정보
@@ -1986,7 +2031,9 @@ class KiwoomConditon(QObject):
             f.write(json.dumps(temp, ensure_ascii= False, indent= 2, sort_keys = True ))
         pass
 
+    # 18
     def makeChegyeolInfo(self, jongmok_code, fidList):
+        print("181818181818")
         fids = fidList.split(";")
         printData = "" 
         info = [] 
@@ -2140,6 +2187,7 @@ class KiwoomConditon(QObject):
     # streonditionName : 조건명
     # strConditionIndex : 조건명 인덱스
     def _OnReceiveRealCondition(self, code, type, conditionName, conditionIndex):
+        print("19191919191919")
 
         if ( '이탈' in conditionName ):
             # print('{} {}, code: {}, 종목이름: {},  type: {},  conditionIndex: {}'
@@ -2228,7 +2276,9 @@ class KiwoomConditon(QObject):
         return items
 
     # 실시간 체결처리하기 위함
+    # 20
     def setRealData(self, real_data_type, item_dict, result_list):
+        print('202020202020')
         jongmok_code = ""
 
         if( '주식호가잔량' in real_data_type):
@@ -2268,7 +2318,9 @@ class KiwoomConditon(QObject):
      # 실시간  주식 정보 요청 요청리스트 갱신  
      # WARNING: 실시간 요청도 TR 처럼 초당 횟수 제한이 있으므로 잘 사용해야함 
     @pyqtSlot()
+    # 9-1
     def refreshRealRequest(self):
+        print(" 9-------------1")
         # 버그로 모두 지우고 새로 등록하게 함 
         # print(util.whoami() )
         self.setRealRemove("ALL", "ALL")
@@ -2318,6 +2370,7 @@ class KiwoomConditon(QObject):
             # tmp = self.setRealReg(kw_util.sendRealRegTradeStartScrNo, '', kw_util.type_fidset['장시작시간'], "0")
             # if( tmp < 0 ):
             #     print("장시작시간: " + kw_util.parseErrorCode(tmp) )
+        print("9---------2")
 
     def make_excel(self, file_path, data_dict):
         # 주의 구글 스프레드 시트는 100개의 요청 제한이 있으므로  
